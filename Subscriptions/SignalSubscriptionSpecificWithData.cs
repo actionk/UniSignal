@@ -2,12 +2,12 @@
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionWithData<T> : SignalSubscription where T : struct, ISignal
+    internal class SignalSubscriptionSpecificWithData<T> : SignalSubscription where T : struct, ISignal
     {
         private readonly T m_signal;
         private readonly Action<T> m_callback;
 
-        public SignalSubscriptionWithData(T signal, Action<T> callback, object listener = default)
+        public SignalSubscriptionSpecificWithData(T signal, Action<T> callback, object listener = default)
         {
             m_signal = signal;
             m_callback = callback;
@@ -20,7 +20,7 @@ namespace Plugins.UniSignal.Subscriptions
 
         public override SignalSubscription Trigger(ISignal data = default)
         {
-            m_callback.Invoke((T)data!);
+            m_callback.Invoke(data != null ? (T)data : default);
             return this;
         }
     }

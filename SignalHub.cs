@@ -81,14 +81,14 @@ namespace Plugins.UniSignal
 
         public SignalSubscription Subscribe<T>(object listener, T signal, Action<T> callback) where T : struct, ISignal<T>
         {
-            var subscription = new SignalSubscriptionWithData<T>(signal, callback, listener);
+            var subscription = new SignalSubscriptionSpecificWithData<T>(signal, callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
         public SignalSubscription Subscribe<T>(T signal, Action<T> callback) where T : struct, ISignal<T>
         {
-            var subscription = new SignalSubscriptionWithData<T>(signal, callback);
+            var subscription = new SignalSubscriptionSpecificWithData<T>(signal, callback);
             AddSubscriber<T>(subscription);
             return subscription;
         }

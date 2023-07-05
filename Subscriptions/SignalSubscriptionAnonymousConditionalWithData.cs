@@ -20,7 +20,7 @@ namespace Plugins.UniSignal.Subscriptions
 
         public override SignalSubscription Trigger(ISignal data = default)
         {
-            var dataOfTypeT = (T)data!;
+            var dataOfTypeT = data != null ? (T)data : default;
             if (!m_predicate.Invoke(dataOfTypeT))
                 return this;
 

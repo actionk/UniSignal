@@ -18,7 +18,7 @@ namespace Plugins.UniSignal.Subscriptions
 
         public override SignalSubscription Trigger(ISignal data = default)
         {
-            m_callback.Invoke((T)data!);
+            m_callback.Invoke(data != null ? (T)data : default);
             return this;
         }
     }
