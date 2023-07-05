@@ -2,7 +2,7 @@
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionAnonymousConditional<T> : SignalSubscription where T : unmanaged, ISignal
+    internal class SignalSubscriptionAnonymousConditional<T> : SignalSubscription where T : struct, ISignal
     {
         private readonly Predicate<T> m_predicate;
         private readonly Action m_callback;

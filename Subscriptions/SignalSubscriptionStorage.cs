@@ -3,7 +3,7 @@ using Plugins.UniSignal.Utils;
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionStorage<T> : ISignalSubscriptionStorage where T : unmanaged, ISignal
+    internal class SignalSubscriptionStorage<T> : ISignalSubscriptionStorage where T : struct, ISignal
     {
         private enum DelayedActionType
         {

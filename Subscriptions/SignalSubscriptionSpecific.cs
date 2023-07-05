@@ -2,7 +2,7 @@
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionSpecific<T> : SignalSubscription where T : unmanaged, ISignal
+    internal class SignalSubscriptionSpecific<T> : SignalSubscription where T : struct, ISignal
     {
         private readonly T m_signal;
         private readonly Action m_callback;
