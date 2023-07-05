@@ -4,6 +4,7 @@ UniSignal is a flexible and performance-focused C# signal management library, ta
 
 ## Table of Contents
 
+- [Getting Started](#getting-started)
 - [Usage](#usage)
   - [SignalHub](#signalhub)
   - [Subscribing to Empty Signals](#subscribing-to-empty-signals)
@@ -15,6 +16,13 @@ UniSignal is a flexible and performance-focused C# signal management library, ta
 - [Tests and Examples](#tests-and-examples)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Getting Started
+
+Open the Package Manager in Unity, click on "+" button, choose "Add package from git URL..." and paste:
+```
+https://github.com/actionk/UniSignal.git#0.1
+```
 
 ## Usage
 
