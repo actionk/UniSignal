@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Plugins.Polymorphex.Packages.UniSignal
+namespace Plugins.UniSignal
 {
     public interface ISignal
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Plugins.Polymorphex.Packages.UniSignal.Utils;
+using Plugins.UniSignal.Utils;
 
-namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
+namespace Plugins.UniSignal.Subscriptions
 {
     internal class SignalSubscriptionStorage<T> : ISignalSubscriptionStorage where T : unmanaged, ISignal
     {
@@ -14,10 +14,10 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
 
         private struct DelayedAction
         {
-            public ASignalSubscription subscription;
+            public SignalSubscription subscription;
             public DelayedActionType actionType;
 
-            public DelayedAction(ASignalSubscription subscription, DelayedActionType actionType)
+            public DelayedAction(SignalSubscription subscription, DelayedActionType actionType)
             {
                 this.subscription = subscription;
                 this.actionType = actionType;
@@ -33,10 +33,10 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
         private bool m_isLocked;
         private bool m_isDirty;
 
-        private readonly MultiValueDictionaryList<ISignal, ASignalSubscription> m_subscriptionsBySignal = new();
-        private readonly List<ASignalSubscription> m_anonymousSubscriptions = new();
+        private readonly MultiValueDictionaryList<ISignal, SignalSubscription> m_subscriptionsBySignal = new();
+        private readonly List<SignalSubscription> m_anonymousSubscriptions = new();
 
-        public void Subscribe(ASignalSubscription subscription)
+        public void Subscribe(SignalSubscription subscription)
         {
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
@@ -50,7 +50,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
                 ForceSubscribe(subscription);
         }
 
-        private void ForceSubscribe(ASignalSubscription subscription)
+        private void ForceSubscribe(SignalSubscription subscription)
         {
             subscription.Storage = this;
             if (subscription.IsAnonymous)
@@ -59,7 +59,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
                 m_subscriptionsBySignal.Add(subscription.Signal, subscription);
         }
 
-        public void Unsubscribe(ASignalSubscription subscription)
+        public void Unsubscribe(SignalSubscription subscription)
         {
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
@@ -87,7 +87,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
                 ForceUnsubscribeAll();
         }
 
-        private void ForceUnsubscribe(ASignalSubscription subscription)
+        private void ForceUnsubscribe(SignalSubscription subscription)
         {
             subscription.Storage = null;
             
@@ -119,7 +119,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
                     subscription.Trigger(signal);
             }
 
-            if (m_subscriptionsBySignal.Count > 0 && m_subscriptionsBySignal.TryGetValue(signal, out List<ASignalSubscription> subscriptions))
+            if (m_subscriptionsBySignal.Count > 0 && m_subscriptionsBySignal.TryGetValue(signal, out List<SignalSubscription> subscriptions))
             {
                 foreach (var subscription in subscriptions)
                     subscription.Trigger(signal);

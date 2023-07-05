@@ -1,4 +1,4 @@
-﻿# UniSignal
+﻿# UniSignal [![Github license](https://img.shields.io/github/license/codewriter-packages/Morpeh.Events.svg?style=flat-square)](#) [![Unity 2020](https://img.shields.io/badge/Unity-2020+-2296F3.svg?style=flat-square)](#) ![GitHub package.json version](https://img.shields.io/github/package-json/v/actionk/UniSignal?style=flat-square)
 
 UniSignal is a flexible and performance-focused C# signal management library, tailored for Unity. It supports subscribing and dispatching signals based on class type, specific data, or custom predicates.
 

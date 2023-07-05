@@ -1,9 +1,9 @@
-﻿namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
+﻿namespace Plugins.UniSignal.Subscriptions
 {
     internal interface ISignalSubscriptionStorage
     {
-        public void Subscribe(ASignalSubscription subscription);
-        public void Unsubscribe(ASignalSubscription subscription);
+        public void Subscribe(SignalSubscription subscription);
+        public void Unsubscribe(SignalSubscription subscription);
         public void Dispatch(ISignal signal);
         void UnsubscribeAll();
     }

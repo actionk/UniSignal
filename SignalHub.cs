@@ -1,92 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
-using Plugins.Polymorphex.Packages.UniSignal.Subscriptions;
-using Plugins.Polymorphex.Packages.UniSignal.Utils;
+using Plugins.UniSignal.Subscriptions;
+using Plugins.UniSignal.Utils;
 
-namespace Plugins.Polymorphex.Packages.UniSignal
+namespace Plugins.UniSignal
 {
     public class SignalHub
     {
 #region API
 
-        public ASignalSubscription Subscribe<T>(object listener, Action callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(object listener, Action callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymous<T>(callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(Action callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(Action callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymous<T>(callback);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(object listener, Action<T> callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(object listener, Action<T> callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymousWithData<T>(callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(Action<T> callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(Action<T> callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymousWithData<T>(callback);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(object listener, Predicate<T> predicate, Action callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(object listener, Predicate<T> predicate, Action callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymousConditional<T>(predicate, callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(Predicate<T> predicate, Action callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(Predicate<T> predicate, Action callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymousConditional<T>(predicate, callback);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(object listener, Predicate<T> predicate, Action<T> callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(object listener, Predicate<T> predicate, Action<T> callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymousConditionalWithData<T>(predicate, callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(Predicate<T> predicate, Action<T> callback) where T : unmanaged, ISignal
+        public SignalSubscription Subscribe<T>(Predicate<T> predicate, Action<T> callback) where T : unmanaged, ISignal
         {
             var subscription = new SignalSubscriptionAnonymousConditionalWithData<T>(predicate, callback);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(object listener, T signal, Action callback) where T : unmanaged, ISignal<T>
+        public SignalSubscription Subscribe<T>(object listener, T signal, Action callback) where T : unmanaged, ISignal<T>
         {
-            var subscription = new SignalSubscription<T>(signal, callback, listener);
+            var subscription = new SignalSubscriptionSpecific<T>(signal, callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(T signal, Action callback) where T : unmanaged, ISignal<T>
+        public SignalSubscription Subscribe<T>(T signal, Action callback) where T : unmanaged, ISignal<T>
         {
-            var subscription = new SignalSubscription<T>(signal, callback);
+            var subscription = new SignalSubscriptionSpecific<T>(signal, callback);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(object listener, T signal, Action<T> callback) where T : unmanaged, ISignal<T>
+        public SignalSubscription Subscribe<T>(object listener, T signal, Action<T> callback) where T : unmanaged, ISignal<T>
         {
             var subscription = new SignalSubscriptionWithData<T>(signal, callback, listener);
             AddSubscriber<T>(subscription);
             return subscription;
         }
 
-        public ASignalSubscription Subscribe<T>(T signal, Action<T> callback) where T : unmanaged, ISignal<T>
+        public SignalSubscription Subscribe<T>(T signal, Action<T> callback) where T : unmanaged, ISignal<T>
         {
             var subscription = new SignalSubscriptionWithData<T>(signal, callback);
             AddSubscriber<T>(subscription);
@@ -108,7 +108,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal
                 storage.UnsubscribeAll();
         }
 
-        public void Unsubscribe(ASignalSubscription subscription)
+        public void Unsubscribe(SignalSubscription subscription)
         {
             if (m_storagesBySignalType.TryGetValue(subscription.SignalType, out ISignalSubscriptionStorage storage))
                 storage.Unsubscribe(subscription);
@@ -116,7 +116,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal
 
         public void Unsubscribe(object listener)
         {
-            if (!m_subscriptionsByListeners.TryGetValue(listener, out List<ASignalSubscription> subscriptions))
+            if (!m_subscriptionsByListeners.TryGetValue(listener, out List<SignalSubscription> subscriptions))
                 return;
 
             foreach (var subscription in subscriptions)
@@ -131,9 +131,9 @@ namespace Plugins.Polymorphex.Packages.UniSignal
 #region Private
 
         private readonly Dictionary<Type, ISignalSubscriptionStorage> m_storagesBySignalType = new();
-        private readonly MultiValueDictionaryList<object, ASignalSubscription> m_subscriptionsByListeners = new();
+        private readonly MultiValueDictionaryList<object, SignalSubscription> m_subscriptionsByListeners = new();
 
-        private void AddSubscriber<T>(ASignalSubscription subscription) where T : unmanaged, ISignal
+        private void AddSubscriber<T>(SignalSubscription subscription) where T : unmanaged, ISignal
         {
             var subscriptionSignalType = subscription.SignalType;
             if (!m_storagesBySignalType.TryGetValue(subscriptionSignalType, out ISignalSubscriptionStorage storage))

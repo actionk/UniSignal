@@ -1,27 +1,21 @@
 ﻿using System;
 
-namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
+namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscription<T> : ASignalSubscription where T : unmanaged, ISignal
+    public abstract class SignalSubscription
     {
-        private readonly T m_signal;
-        private readonly Action m_callback;
+        internal ISignalSubscriptionStorage Storage { get; set; }
 
-        public SignalSubscription(T signal, Action callback, object listener = default)
+        public object Listener { get; protected set; }
+        public abstract ISignal Signal { get; }
+        public abstract Type SignalType { get; }
+        public abstract bool IsAnonymous { get; }
+
+        public abstract SignalSubscription Trigger(ISignal data = default);
+
+        public void Unsubscribe()
         {
-            m_signal = signal;
-            m_callback = callback;
-            Listener = listener;
-        }
-
-        public override ISignal Signal => m_signal;
-        public override Type SignalType => typeof(T);
-        public override bool IsAnonymous => false;
-
-        public override ASignalSubscription Trigger(ISignal data = default)
-        {
-            m_callback.Invoke();
-            return this;
+            Storage?.Unsubscribe(this);
         }
     }
 }

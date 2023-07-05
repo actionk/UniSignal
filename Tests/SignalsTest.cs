@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Debug = UnityEngine.Debug;
 
-namespace Plugins.Polymorphex.Packages.UniSignal.Tests
+namespace Plugins.UniSignal.Tests
 {
     public class SignalsTest
     {

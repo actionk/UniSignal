@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
+namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionAnonymousConditional<T> : ASignalSubscription where T : unmanaged, ISignal
+    internal class SignalSubscriptionAnonymousConditional<T> : SignalSubscription where T : unmanaged, ISignal
     {
         private readonly Predicate<T> m_predicate;
         private readonly Action m_callback;
@@ -18,7 +18,7 @@ namespace Plugins.Polymorphex.Packages.UniSignal.Subscriptions
         public override Type SignalType => typeof(T);
         public override bool IsAnonymous => true;
 
-        public override ASignalSubscription Trigger(ISignal data = default)
+        public override SignalSubscription Trigger(ISignal data = default)
         {
             var dataOfTypeT = (T)data!;
             if (!m_predicate.Invoke(dataOfTypeT))
