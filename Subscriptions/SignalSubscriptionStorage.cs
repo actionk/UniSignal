@@ -30,8 +30,8 @@ namespace Plugins.UniSignal.Subscriptions
         }
 
         private readonly List<DelayedAction> m_delayedActions = new();
-        private bool m_isLocked;
-        private bool m_isDirty;
+        private volatile bool m_isLocked;
+        private volatile bool m_isDirty;
 
         private readonly MultiValueDictionaryList<ISignal, SignalSubscription> m_subscriptionsBySignal = new();
         private readonly List<SignalSubscription> m_anonymousSubscriptions = new();
@@ -53,17 +53,20 @@ namespace Plugins.UniSignal.Subscriptions
         private void ForceSubscribe(SignalSubscription subscription)
         {
             subscription.Storage = this;
+
+            m_isLocked = true;
             if (subscription.IsAnonymous)
                 m_anonymousSubscriptions.Add(subscription);
             else
                 m_subscriptionsBySignal.Add(subscription.Signal, subscription);
+            m_isLocked = false;
         }
 
         public void Unsubscribe(SignalSubscription subscription)
         {
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
-            
+
             if (m_isLocked)
             {
                 m_delayedActions.Add(new DelayedAction(subscription, DelayedActionType.UNSUBSCRIBE));
@@ -77,7 +80,7 @@ namespace Plugins.UniSignal.Subscriptions
         {
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
-            
+
             if (m_isLocked)
             {
                 m_delayedActions.Add(new DelayedAction(DelayedActionType.UNSUBSCRIBE_ALL));
@@ -90,17 +93,21 @@ namespace Plugins.UniSignal.Subscriptions
         private void ForceUnsubscribe(SignalSubscription subscription)
         {
             subscription.Storage = null;
-            
+
+            m_isLocked = true;
             if (subscription.IsAnonymous)
                 m_anonymousSubscriptions.Remove(subscription);
             else
                 m_subscriptionsBySignal.Remove(subscription.Signal, subscription);
+            m_isLocked = false;
         }
 
         private void ForceUnsubscribeAll()
         {
+            m_isLocked = true;
             m_anonymousSubscriptions.Clear();
             m_subscriptionsBySignal.Clear();
+            m_isLocked = false;
         }
 
         public void Dispatch(ISignal signal)
@@ -113,6 +120,7 @@ namespace Plugins.UniSignal.Subscriptions
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
 
+            m_isLocked = true;
             if (m_anonymousSubscriptions.Count > 0)
             {
                 foreach (var subscription in m_anonymousSubscriptions)
@@ -124,10 +132,12 @@ namespace Plugins.UniSignal.Subscriptions
                 foreach (var subscription in subscriptions)
                     subscription.Trigger(signal);
             }
+            m_isLocked = false;
         }
-        
+
         private void ProcessDelayedActions()
         {
+            m_isLocked = true;
             foreach (var delayedAction in m_delayedActions)
             {
                 switch (delayedAction.actionType)
@@ -135,17 +145,18 @@ namespace Plugins.UniSignal.Subscriptions
                     case DelayedActionType.SUBSCRIBE:
                         ForceSubscribe(delayedAction.subscription);
                         break;
-                    
+
                     case DelayedActionType.UNSUBSCRIBE:
                         ForceUnsubscribe(delayedAction.subscription);
                         break;
-                    
+
                     case DelayedActionType.UNSUBSCRIBE_ALL:
                         ForceUnsubscribeAll();
                         break;
                 }
             }
 
+            m_isLocked = false;
             m_delayedActions.Clear();
             m_isDirty = false;
         }
