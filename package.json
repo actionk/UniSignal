@@ -2,7 +2,7 @@
   "name": "com.actionik.polymorphex.unisignal",
   "displayName": "UniSignal",
   "description": "Intuitive and flexible C# signal management library tailored for Unity, allowing seamless signal subscription and dispatch based on class type, specific data, or custom predicates",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "unity": "2021.3",
   "license": "MIT",
   "author": "ActioNik (https://github.com/actionk)",
