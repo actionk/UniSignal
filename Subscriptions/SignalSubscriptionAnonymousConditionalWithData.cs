@@ -2,7 +2,7 @@
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionAnonymousConditionalWithData<T> : SignalSubscription where T : struct, ISignal
+    internal class SignalSubscriptionAnonymousConditionalWithData<T> : SignalSubscription<T> where T : struct, ISignal
     {
         private readonly Predicate<T> m_predicate;
         private readonly Action<T> m_callback;
@@ -18,14 +18,12 @@ namespace Plugins.UniSignal.Subscriptions
         public override Type SignalType => typeof(T);
         public override bool IsAnonymous => true;
 
-        public override SignalSubscription Trigger(ISignal data = default)
+        public override void Trigger(T data)
         {
-            var dataOfTypeT = data != null ? (T)data : default;
-            if (!m_predicate.Invoke(dataOfTypeT))
-                return this;
+            if (!m_predicate.Invoke(data))
+                return;
 
-            m_callback.Invoke(dataOfTypeT);
-            return this;
+            m_callback.Invoke(data);
         }
     }
 }

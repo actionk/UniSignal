@@ -2,9 +2,9 @@
 {
     internal interface ISignalSubscriptionStorage
     {
-        public void Subscribe(SignalSubscription subscription);
-        public void Unsubscribe(SignalSubscription subscription);
-        public void Dispatch(ISignal signal);
+        public void Subscribe(ISignalSubscription subscription);
+        public void Unsubscribe(ISignalSubscription subscription);
+
         void UnsubscribeAll();
     }
 }

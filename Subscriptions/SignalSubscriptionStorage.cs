@@ -14,10 +14,10 @@ namespace Plugins.UniSignal.Subscriptions
 
         private struct DelayedAction
         {
-            public SignalSubscription subscription;
+            public SignalSubscription<T> subscription;
             public DelayedActionType actionType;
 
-            public DelayedAction(SignalSubscription subscription, DelayedActionType actionType)
+            public DelayedAction(SignalSubscription<T> subscription, DelayedActionType actionType)
             {
                 this.subscription = subscription;
                 this.actionType = actionType;
@@ -33,10 +33,10 @@ namespace Plugins.UniSignal.Subscriptions
         private volatile bool m_isLocked;
         private volatile bool m_isDirty;
 
-        private readonly MultiValueDictionaryList<ISignal, SignalSubscription> m_subscriptionsBySignal = new();
-        private readonly List<SignalSubscription> m_anonymousSubscriptions = new();
+        private readonly MultiValueDictionaryList<ISignal, SignalSubscription<T>> m_subscriptionsBySignal = new();
+        private readonly List<SignalSubscription<T>> m_anonymousSubscriptions = new();
 
-        public void Subscribe(SignalSubscription subscription)
+        public void Subscribe(SignalSubscription<T> subscription)
         {
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
@@ -50,7 +50,17 @@ namespace Plugins.UniSignal.Subscriptions
                 ForceSubscribe(subscription);
         }
 
-        private void ForceSubscribe(SignalSubscription subscription)
+        public void Subscribe(ISignalSubscription subscription)
+        {
+            Subscribe((SignalSubscription<T>)subscription);
+        }
+
+        public void Unsubscribe(ISignalSubscription subscription)
+        {
+            Unsubscribe((SignalSubscription<T>)subscription);
+        }
+
+        private void ForceSubscribe(SignalSubscription<T> subscription)
         {
             subscription.Storage = this;
 
@@ -62,7 +72,7 @@ namespace Plugins.UniSignal.Subscriptions
             m_isLocked = false;
         }
 
-        public void Unsubscribe(SignalSubscription subscription)
+        public void Unsubscribe(SignalSubscription<T> subscription)
         {
             if (m_isDirty && !m_isLocked)
                 ProcessDelayedActions();
@@ -90,7 +100,32 @@ namespace Plugins.UniSignal.Subscriptions
                 ForceUnsubscribeAll();
         }
 
-        private void ForceUnsubscribe(SignalSubscription subscription)
+        public void Dispatch(T signal)
+        {
+            if (m_isDirty && !m_isLocked)
+                ProcessDelayedActions();
+
+            m_isLocked = true;
+            if (m_anonymousSubscriptions.Count > 0)
+            {
+                foreach (var subscription in m_anonymousSubscriptions)
+                    subscription.Trigger(signal);
+            }
+
+            if (m_subscriptionsBySignal.Count > 0 && m_subscriptionsBySignal.TryGetValue(signal, out List<SignalSubscription<T>> subscriptions))
+            {
+                foreach (var subscription in subscriptions)
+                    subscription.Trigger(signal);
+            }
+
+            m_isLocked = false;
+        }
+
+        public void DispatchAsync(T signal)
+        {
+        }
+
+        private void ForceUnsubscribe(SignalSubscription<T> subscription)
         {
             subscription.Storage = null;
 
@@ -107,31 +142,6 @@ namespace Plugins.UniSignal.Subscriptions
             m_isLocked = true;
             m_anonymousSubscriptions.Clear();
             m_subscriptionsBySignal.Clear();
-            m_isLocked = false;
-        }
-
-        public void Dispatch(ISignal signal)
-        {
-            Dispatch((T)signal);
-        }
-
-        public void Dispatch(T signal)
-        {
-            if (m_isDirty && !m_isLocked)
-                ProcessDelayedActions();
-
-            m_isLocked = true;
-            if (m_anonymousSubscriptions.Count > 0)
-            {
-                foreach (var subscription in m_anonymousSubscriptions)
-                    subscription.Trigger(signal);
-            }
-
-            if (m_subscriptionsBySignal.Count > 0 && m_subscriptionsBySignal.TryGetValue(signal, out List<SignalSubscription> subscriptions))
-            {
-                foreach (var subscription in subscriptions)
-                    subscription.Trigger(signal);
-            }
             m_isLocked = false;
         }
 

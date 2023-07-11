@@ -4,7 +4,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Plugins.UniSignal.Tests
 {
-    public class SignalsTest
+    public class Signals_Test
     {
         private struct TestSignal : ISignal
         {

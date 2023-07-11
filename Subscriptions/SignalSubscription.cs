@@ -2,7 +2,8 @@
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    public abstract class SignalSubscription
+    public abstract class SignalSubscription<T> : ISignalSubscription
+        where T: struct, ISignal
     {
         internal ISignalSubscriptionStorage Storage { get; set; }
 
@@ -11,7 +12,7 @@ namespace Plugins.UniSignal.Subscriptions
         public abstract Type SignalType { get; }
         public abstract bool IsAnonymous { get; }
 
-        public abstract SignalSubscription Trigger(ISignal data = default);
+        public abstract void Trigger(T data);
 
         public void Unsubscribe()
         {

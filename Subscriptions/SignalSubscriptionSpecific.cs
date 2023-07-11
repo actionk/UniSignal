@@ -2,7 +2,7 @@
 
 namespace Plugins.UniSignal.Subscriptions
 {
-    internal class SignalSubscriptionSpecific<T> : SignalSubscription where T : struct, ISignal
+    internal class SignalSubscriptionSpecific<T> : SignalSubscription<T> where T : struct, ISignal
     {
         private readonly T m_signal;
         private readonly Action m_callback;
@@ -18,10 +18,9 @@ namespace Plugins.UniSignal.Subscriptions
         public override Type SignalType => typeof(T);
         public override bool IsAnonymous => false;
 
-        public override SignalSubscription Trigger(ISignal data = default)
+        public override void Trigger(T data)
         {
             m_callback.Invoke();
-            return this;
         }
     }
 }
