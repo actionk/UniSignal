@@ -30,7 +30,7 @@ namespace Plugins.UniSignal.Core
 
         private readonly List<IAsyncSignalQueueEntry> m_queuedSignals = new();
 
-        private AsyncSignalManager()
+        public AsyncSignalManager()
         {
         }
 
