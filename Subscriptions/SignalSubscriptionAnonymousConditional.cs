@@ -18,13 +18,14 @@ namespace Plugins.UniSignal.Subscriptions
         public override Type SignalType => typeof(T);
         public override bool IsAnonymous => true;
 
-        public override void Trigger(T data)
+        public override SignalSubscription<T> Trigger(T data)
         {
             var dataOfTypeT = data;
             if (!m_predicate.Invoke(dataOfTypeT))
-                return;
+                return this;
 
             m_callback.Invoke();
+            return this;
         }
     }
 }

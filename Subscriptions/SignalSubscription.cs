@@ -12,7 +12,7 @@ namespace Plugins.UniSignal.Subscriptions
         public abstract Type SignalType { get; }
         public abstract bool IsAnonymous { get; }
 
-        public abstract void Trigger(T data);
+        public abstract SignalSubscription<T> Trigger(T data);
 
         public void Unsubscribe()
         {

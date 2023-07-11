@@ -96,6 +96,11 @@ namespace Plugins.UniSignal
 
         private AsyncSignalManager m_asyncSignalManager;
 
+        public void SetCustomAsyncSignalManager(AsyncSignalManager asyncSignalManager)
+        {
+            m_asyncSignalManager = asyncSignalManager;
+        }
+
         public void DispatchAsync<T>(T signal) where T : struct, ISignal
         {
             m_asyncSignalManager ??= AsyncSignalManager.Instance;
