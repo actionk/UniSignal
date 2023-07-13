@@ -12,7 +12,7 @@ namespace Plugins.UniSignal.Core
 
         private static readonly Lazy<AsyncSignalManager> INSTANCE = new(() => new AsyncSignalManager(), LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private interface IAsyncSignalQueueEntry
+        public interface IAsyncSignalQueueEntry
         {
             void Dispatch();
         }
@@ -36,12 +36,27 @@ namespace Plugins.UniSignal.Core
 
         /// <summary>
         /// Call this method from any of your schedulers or use <see cref="AsyncSignalManagerUpdater"/>
+        /// <param name="callback">Callback for each entry in </param>
         /// </summary>
-        public void Update()
+        public void Update(Func<IAsyncSignalQueueEntry, bool> callback = null)
         {
             var queuedSignals = FlushSignals();
-            foreach (var signal in queuedSignals)
-                signal.Dispatch();
+
+            if (callback != null)
+            {
+                foreach (var signal in queuedSignals)
+                {
+                    if (callback.Invoke(signal))
+                        continue;
+
+                    signal.Dispatch();
+                }
+            }
+            else
+            {
+                foreach (var signal in queuedSignals)
+                    signal.Dispatch();
+            }
         }
 
         internal void AddSignal<T>(SignalHub signalHub, T signal) where T : struct, ISignal
@@ -56,7 +71,7 @@ namespace Plugins.UniSignal.Core
             }
         }
 
-        private IEnumerable<IAsyncSignalQueueEntry> FlushSignals()
+        private List<IAsyncSignalQueueEntry> FlushSignals()
         {
             lock (m_queuedSignals)
             {

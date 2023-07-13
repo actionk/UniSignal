@@ -101,7 +101,7 @@ namespace Plugins.UniSignal
             m_asyncSignalManager = asyncSignalManager;
         }
 
-        public void DispatchAsync<T>(T signal) where T : struct, ISignal
+        public void DispatchInBackground<T>(T signal) where T : struct, ISignal
         {
             m_asyncSignalManager ??= AsyncSignalManager.Instance;
             m_asyncSignalManager.AddSignal(this, signal);
