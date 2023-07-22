@@ -100,6 +100,46 @@ namespace Plugins.UniSignal.Subscriptions
                 ForceUnsubscribeAll();
         }
 
+        private readonly List<SignalSubscription<T>> m_subscriptionsToUnsubscribe = new();
+
+        public void Unsubscribe(object listener)
+        {
+            if (m_isDirty && !m_isLocked)
+                ProcessDelayedActions();
+
+            m_subscriptionsToUnsubscribe.Clear();
+            foreach (var subscriptionBySignal in m_subscriptionsBySignal)
+            {
+                foreach (var subscription in subscriptionBySignal.Value)
+                {
+                    if (subscription.Listener.Equals(listener))
+                        m_subscriptionsToUnsubscribe.Add(subscription);
+                }
+            }
+
+            foreach (var subscription in m_anonymousSubscriptions)
+            {
+                if (subscription.Listener.Equals(listener))
+                    m_subscriptionsToUnsubscribe.Add(subscription);
+            }
+
+            if (m_subscriptionsToUnsubscribe.Count == 0)
+                return;
+
+            if (m_isLocked)
+            {
+                foreach (var subscription in m_subscriptionsToUnsubscribe)
+                    m_delayedActions.Add(new DelayedAction(subscription, DelayedActionType.UNSUBSCRIBE));
+
+                m_isDirty = true;
+            }
+            else
+            {
+                foreach (var subscription in m_subscriptionsToUnsubscribe)
+                    ForceUnsubscribe(subscription);
+            }
+        }
+
         public void Dispatch(T signal)
         {
             if (m_isDirty && !m_isLocked)

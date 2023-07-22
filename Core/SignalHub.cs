@@ -121,6 +121,12 @@ namespace Plugins.UniSignal
                 storage.UnsubscribeAll();
         }
 
+        public void Unsubscribe<T>(object listener) where T : struct, ISignal
+        {
+            if (m_storagesBySignalType.TryGetValue(typeof(T), out ISignalSubscriptionStorage storage))
+                storage.Unsubscribe(listener);
+        }
+
         public void Unsubscribe(ISignalSubscription subscription)
         {
             if (m_storagesBySignalType.TryGetValue(subscription.SignalType, out ISignalSubscriptionStorage storage))
