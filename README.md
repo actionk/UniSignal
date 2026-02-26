@@ -1,6 +1,10 @@
-# UniSignal [![Github license](https://img.shields.io/github/license/codewriter-packages/Morpeh.Events.svg?style=flat-square)](#) [![Unity 2021.3+](https://img.shields.io/badge/Unity-2021.3+-2296F3.svg?style=flat-square)](#) ![GitHub package.json version](https://img.shields.io/github/package-json/v/actionk/UniSignal?style=flat-square)
+<p align="center">
+  <img src="Media/unisignal_logo.png" alt="UniSignal Logo" width="200">
+</p>
 
 A lightweight, zero-allocation signal (event) library for Unity. Decouple your systems with type-safe, struct-based signals — no strings, no boxing, no garbage.
+
+[![Github license](https://img.shields.io/github/license/codewriter-packages/Morpeh.Events.svg?style=flat-square)](#) [![Unity 2021.3+](https://img.shields.io/badge/Unity-2021.3+-2296F3.svg?style=flat-square)](#) ![GitHub package.json version](https://img.shields.io/github/package-json/v/actionk/UniSignal?style=flat-square)
 
 ## Features
 
