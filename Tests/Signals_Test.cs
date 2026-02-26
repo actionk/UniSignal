@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
+using UniSignal;
 using NUnit.Framework;
 using Debug = UnityEngine.Debug;
 
-namespace Plugins.UniSignal.Tests
+namespace UniSignal.Tests
 {
     public class Signals_Test
     {

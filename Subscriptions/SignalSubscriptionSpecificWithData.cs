@@ -1,17 +1,29 @@
-﻿using System;
+using System;
+using UniSignal;
 
-namespace Plugins.UniSignal.Subscriptions
+namespace UniSignal.Subscriptions
 {
     internal class SignalSubscriptionSpecificWithData<T> : SignalSubscription<T> where T : struct, ISignal
     {
-        private readonly T m_signal;
-        private readonly Action<T> m_callback;
+        private T m_signal;
+        private Action<T> m_callback;
 
-        public SignalSubscriptionSpecificWithData(T signal, Action<T> callback, object listener = default)
+        public SignalSubscriptionSpecificWithData() { }
+
+        public void Initialize(T signal, Action<T> callback, object listener)
         {
             m_signal = signal;
             m_callback = callback;
             Listener = listener;
+        }
+
+        public override void Reset()
+        {
+            m_signal = default;
+            m_callback = null;
+            Listener = null;
+            Storage = null;
+            ReturnToPool = null;
         }
 
         public override ISignal Signal => m_signal;
@@ -20,7 +32,7 @@ namespace Plugins.UniSignal.Subscriptions
 
         public override SignalSubscription<T> Trigger(T data)
         {
-            m_callback.Invoke(data);
+            m_callback?.Invoke(data);
             return this;
         }
     }

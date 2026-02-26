@@ -1,4 +1,4 @@
-﻿namespace Plugins.UniSignal.Subscriptions
+﻿namespace UniSignal.Subscriptions
 {
     internal interface ISignalSubscriptionStorage
     {

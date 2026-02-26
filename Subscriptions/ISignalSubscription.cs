@@ -1,6 +1,7 @@
 ﻿using System;
+using UniSignal;
 
-namespace Plugins.UniSignal.Subscriptions
+namespace UniSignal.Subscriptions
 {
     public interface ISignalSubscription
     {

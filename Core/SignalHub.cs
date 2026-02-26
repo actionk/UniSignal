@@ -1,110 +1,134 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Plugins.UniSignal.Core;
-using Plugins.UniSignal.Subscriptions;
-using Plugins.UniSignal.Utils;
+using UniSignal.Subscriptions;
+using UniSignal.Utils;
 
-namespace Plugins.UniSignal
+namespace UniSignal
 {
     public class SignalHub
     {
-#region API
+        #region Subscription Pools
+
+        private static class SubscriptionPools<T> where T : struct, ISignal
+        {
+            public static readonly ObjectPool<SignalSubscriptionAnonymous<T>> Anonymous = new();
+            public static readonly ObjectPool<SignalSubscriptionAnonymousWithData<T>> AnonymousWithData = new();
+            public static readonly ObjectPool<SignalSubscriptionAnonymousConditional<T>> AnonymousConditional = new();
+            public static readonly ObjectPool<SignalSubscriptionAnonymousConditionalWithData<T>> AnonymousConditionalWithData = new();
+            public static readonly ObjectPool<SignalSubscriptionSpecific<T>> Specific = new();
+            public static readonly ObjectPool<SignalSubscriptionSpecificWithData<T>> SpecificWithData = new();
+        }
+
+        #endregion
+
+        #region API
 
         public SignalSubscription<T> Subscribe<T>(object listener, Action callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymous<T>(callback, listener);
+            var subscription = SubscriptionPools<T>.Anonymous.Get();
+            subscription.Initialize(callback, listener);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.Anonymous.Return((SignalSubscriptionAnonymous<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(Action callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymous<T>(callback);
+            var subscription = SubscriptionPools<T>.Anonymous.Get();
+            subscription.Initialize(callback, null);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.Anonymous.Return((SignalSubscriptionAnonymous<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(object listener, Action<T> callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymousWithData<T>(callback, listener);
+            var subscription = SubscriptionPools<T>.AnonymousWithData.Get();
+            subscription.Initialize(callback, listener);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.AnonymousWithData.Return((SignalSubscriptionAnonymousWithData<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(Action<T> callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymousWithData<T>(callback);
+            var subscription = SubscriptionPools<T>.AnonymousWithData.Get();
+            subscription.Initialize(callback, null);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.AnonymousWithData.Return((SignalSubscriptionAnonymousWithData<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(object listener, Predicate<T> predicate, Action callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymousConditional<T>(predicate, callback, listener);
+            var subscription = SubscriptionPools<T>.AnonymousConditional.Get();
+            subscription.Initialize(predicate, callback, listener);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.AnonymousConditional.Return((SignalSubscriptionAnonymousConditional<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(Predicate<T> predicate, Action callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymousConditional<T>(predicate, callback);
+            var subscription = SubscriptionPools<T>.AnonymousConditional.Get();
+            subscription.Initialize(predicate, callback, null);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.AnonymousConditional.Return((SignalSubscriptionAnonymousConditional<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(object listener, Predicate<T> predicate, Action<T> callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymousConditionalWithData<T>(predicate, callback, listener);
+            var subscription = SubscriptionPools<T>.AnonymousConditionalWithData.Get();
+            subscription.Initialize(predicate, callback, listener);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.AnonymousConditionalWithData.Return((SignalSubscriptionAnonymousConditionalWithData<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(Predicate<T> predicate, Action<T> callback) where T : struct, ISignal
         {
-            var subscription = new SignalSubscriptionAnonymousConditionalWithData<T>(predicate, callback);
-            AddSubscriber<T>(subscription);
+            var subscription = SubscriptionPools<T>.AnonymousConditionalWithData.Get();
+            subscription.Initialize(predicate, callback, null);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.AnonymousConditionalWithData.Return((SignalSubscriptionAnonymousConditionalWithData<T>)s);
+            AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(object listener, T signal, Action callback) where T : struct, ISignal<T>
         {
-            var subscription = new SignalSubscriptionSpecific<T>(signal, callback, listener);
+            var subscription = SubscriptionPools<T>.Specific.Get();
+            subscription.Initialize(signal, callback, listener);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.Specific.Return((SignalSubscriptionSpecific<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(T signal, Action callback) where T : struct, ISignal<T>
         {
-            var subscription = new SignalSubscriptionSpecific<T>(signal, callback);
+            var subscription = SubscriptionPools<T>.Specific.Get();
+            subscription.Initialize(signal, callback, null);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.Specific.Return((SignalSubscriptionSpecific<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(object listener, T signal, Action<T> callback) where T : struct, ISignal<T>
         {
-            var subscription = new SignalSubscriptionSpecificWithData<T>(signal, callback, listener);
+            var subscription = SubscriptionPools<T>.SpecificWithData.Get();
+            subscription.Initialize(signal, callback, listener);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.SpecificWithData.Return((SignalSubscriptionSpecificWithData<T>)s);
             AddSubscriber(subscription);
             return subscription;
         }
 
         public SignalSubscription<T> Subscribe<T>(T signal, Action<T> callback) where T : struct, ISignal<T>
         {
-            var subscription = new SignalSubscriptionSpecificWithData<T>(signal, callback);
+            var subscription = SubscriptionPools<T>.SpecificWithData.Get();
+            subscription.Initialize(signal, callback, null);
+            subscription.ReturnToPool = s => SubscriptionPools<T>.SpecificWithData.Return((SignalSubscriptionSpecificWithData<T>)s);
             AddSubscriber(subscription);
             return subscription;
-        }
-
-        private AsyncSignalManager m_asyncSignalManager;
-
-        public void SetCustomAsyncSignalManager(AsyncSignalManager asyncSignalManager)
-        {
-            m_asyncSignalManager = asyncSignalManager;
-        }
-
-        public void DispatchInBackground<T>(T signal) where T : struct, ISignal
-        {
-            m_asyncSignalManager ??= AsyncSignalManager.Instance;
-            m_asyncSignalManager.AddSignal(this, signal);
         }
 
         public void Dispatch<T>(T signal) where T : struct, ISignal
@@ -138,16 +162,22 @@ namespace Plugins.UniSignal
             if (!m_subscriptionsByListeners.TryGetValue(listener, out List<ISignalSubscription> subscriptions))
                 return;
 
-            foreach (var subscription in subscriptions)
+            for (int i = 0; i < subscriptions.Count; i++)
             {
+                var subscription = subscriptions[i];
                 if (m_storagesBySignalType.TryGetValue(subscription.SignalType, out ISignalSubscriptionStorage storage))
                     storage.Unsubscribe(subscription);
             }
         }
 
-#endregion
+        public IEnumerable<object> GetSubscriptionListeners()
+        {
+            return m_subscriptionsByListeners.Keys;
+        }
 
-#region Private
+        #endregion
+
+        #region Private
 
         private readonly Dictionary<Type, ISignalSubscriptionStorage> m_storagesBySignalType = new();
         private readonly MultiValueDictionaryList<object, ISignalSubscription> m_subscriptionsByListeners = new();
@@ -177,6 +207,6 @@ namespace Plugins.UniSignal
             m_subscriptionsByListeners.Add(subscription.Listener, subscription);
         }
 
-#endregion
+        #endregion
     }
 }

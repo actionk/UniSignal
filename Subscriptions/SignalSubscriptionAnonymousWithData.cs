@@ -1,15 +1,26 @@
-﻿using System;
+using System;
+using UniSignal;
 
-namespace Plugins.UniSignal.Subscriptions
+namespace UniSignal.Subscriptions
 {
     internal class SignalSubscriptionAnonymousWithData<T> : SignalSubscription<T> where T : struct, ISignal
     {
-        private readonly Action<T> m_callback;
+        private Action<T> m_callback;
 
-        public SignalSubscriptionAnonymousWithData(Action<T> callback, object listener = default)
+        public SignalSubscriptionAnonymousWithData() { }
+
+        public void Initialize(Action<T> callback, object listener)
         {
             m_callback = callback;
             Listener = listener;
+        }
+
+        public override void Reset()
+        {
+            m_callback = null;
+            Listener = null;
+            Storage = null;
+            ReturnToPool = null;
         }
 
         public override ISignal Signal => default;
@@ -18,7 +29,7 @@ namespace Plugins.UniSignal.Subscriptions
 
         public override SignalSubscription<T> Trigger(T data)
         {
-            m_callback.Invoke(data);
+            m_callback?.Invoke(data);
             return this;
         }
     }

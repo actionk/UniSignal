@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿using UniSignal;
+using NUnit.Framework;
 
-namespace Plugins.UniSignal.Tests
+namespace UniSignal.Tests
 {
     public class Signals_Sync_Test
     {

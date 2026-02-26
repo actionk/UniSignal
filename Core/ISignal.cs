@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Plugins.UniSignal
+namespace UniSignal
 {
     public interface ISignal
     {
