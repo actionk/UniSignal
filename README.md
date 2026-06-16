@@ -49,7 +49,7 @@ A lightweight, zero-allocation signal (event) library for Unity. Decouple your s
 2. Click **+** → **Add package from git URL...**
 3. Enter:
 ```
-https://github.com/actionk/UniSignal.git#1.0.1
+https://github.com/actionk/UniSignal.git#1.0.2
 ```
 
 ### Option 2: manifest.json
@@ -57,7 +57,7 @@ https://github.com/actionk/UniSignal.git#1.0.1
 Add to your `Packages/manifest.json`:
 
 ```json
-"com.actionik.polymorphex.unisignal": "https://github.com/actionk/UniSignal.git#1.0.1"
+"com.actionik.polymorphex.unisignal": "https://github.com/actionk/UniSignal.git#1.0.2"
 ```
 
 ## Quick Start
